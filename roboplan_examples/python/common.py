@@ -517,6 +517,65 @@ def get_model_data():
                 ),
             ],
         ),
+        "stretch_pg4": RobotModelConfig(
+            urdf_path=ROBOPLAN_MODELS_DIR
+            / "stretch4_robot_model"
+            / "stretch4_pg4.urdf",
+            srdf_path=ROBOPLAN_MODELS_DIR
+            / "stretch4_robot_model"
+            / "stretch4_pg4.srdf",
+            yaml_config_path=ROBOPLAN_MODELS_DIR
+            / "stretch4_robot_model"
+            / "stretch4_pg4_config.yaml",
+            default_joint_group="stretch4_arm",
+            ee_names=["grasp_center_link"],
+            base_link="universe",
+            starting_joint_config=[
+                # nq=16 with Pinocchio mimic joints (arm_l2/l3/l4 into arm_l1, finger_right into finger_left).
+                # Planar base (x, y, cos(yaw), sin(yaw)), SRDF home pose.
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.5,  # lift_joint
+                0.065,  # arm_l1_joint
+                0.0,  # wrist_yaw_joint
+                0.0,  # wrist_pitch_joint
+                0.0,  # wrist_roll_joint
+                0.0,  # finger_left_joint
+                1.0,
+                0.0,  # wheel_0_joint (cos, sin)
+                1.0,
+                0.0,  # wheel_1_joint
+                1.0,
+                0.0,  # wheel_2_joint
+            ],
+            obstacles=[
+                ObstacleConfig(
+                    name="test_box",
+                    geom=coal.Box(1.0, 1.0, 0.5),
+                    parent_frame="universe",
+                    tform=pin.SE3(np.eye(3), np.array([0.0, 0.0, 1.2])).homogeneous,
+                    color=np.array([0.0, 0.0, 1.0, 0.5]),
+                ),
+                ObstacleConfig(
+                    name="test_sphere",
+                    geom=coal.Sphere(0.3),
+                    parent_frame="universe",
+                    tform=pin.SE3(np.eye(3), np.array([0.75, 0.0, 0.25])).homogeneous,
+                    color=np.array([1.0, 0.0, 0.0, 0.5]),
+                    disabled_collisions=["test_box"],
+                ),
+                ObstacleConfig(
+                    name="ground_plane",
+                    geom=coal.Box(2.0, 2.0, 0.2),
+                    parent_frame="universe",
+                    tform=pin.SE3(np.eye(3), np.array([0.0, 0.0, -0.1])).homogeneous,
+                    color=np.array([0.5, 0.5, 0.5, 0.5]),
+                    disabled_collisions=["base_link", "test_box", "test_sphere"],
+                ),
+            ],
+        ),
         "reachback": RobotModelConfig(
             urdf_path=ROBOPLAN_MODELS_DIR / "reachback_robot_model" / "reachback.urdf",
             srdf_path=ROBOPLAN_MODELS_DIR / "reachback_robot_model" / "reachback.srdf",
